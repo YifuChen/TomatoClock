@@ -29,7 +29,7 @@ public class TomatoUI extends JPanel implements ActionListener {
         add(cf.getClockFace(), BorderLayout.CENTER);
         add(todo, BorderLayout.LINE_END);
 
-        TomatoTimer t = new TomatoTimer(50);
+        TomatoTimer t = new TomatoTimer(25, cf);
     }
 
     @Override
