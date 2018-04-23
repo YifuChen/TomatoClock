@@ -31,7 +31,7 @@ public class TodoList extends JPanel {
             }
         });
         JScrollPane listScrollPane = new JScrollPane(list);
-        listScrollPane.setPreferredSize(new Dimension(250, 80));
+        listScrollPane.setPreferredSize(new Dimension(300, 300));
 
         this.add(listScrollPane);
     }

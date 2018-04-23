@@ -21,6 +21,9 @@ public class ClockFace {
         this.clockFace = createClockFace();
     }
 
+    public JLayeredPane getClockFace() {
+        return clockFace;
+    }
 
     private JLayeredPane createClockFace() {
         JLayeredPane lp = new JLayeredPane();

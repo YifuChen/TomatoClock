@@ -1,12 +1,8 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class TomatoUI extends JPanel implements ActionListener {
     JFileChooser fc;
@@ -19,24 +15,21 @@ public class TomatoUI extends JPanel implements ActionListener {
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
         // UIs
-        JLabel title = new JLabel("<html><h1>Photo Stamper</h1></html>");
+        JLabel title = new JLabel("<html><h1>Tomato</h1></html>");
 
 
         fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        openButton = new JButton("open");
-        openButton.addActionListener(this);
-        saveButton = new JButton("save");
-        saveButton.addActionListener(this);
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(openButton);
-        buttonPanel.add(saveButton);
-
+        TodoList todo = new TodoList();
+        ClockFace cf = new ClockFace();
 
         // layout
         add(title, BorderLayout.PAGE_START);
-        add(buttonPanel, BorderLayout.PAGE_END);
+        add(cf.getClockFace(), BorderLayout.CENTER);
+        add(todo, BorderLayout.LINE_END);
+
+        TomatoTimer t = new TomatoTimer(50);
     }
 
     @Override
