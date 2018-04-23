@@ -7,6 +7,7 @@ public class ClockFace {
     private JButton start;          // start button
     private JButton stop;           // stop button
     private JLabel time;            // text that display current time
+    private JLabel status;          // text that display current status
     private BufferedImage img;      // img used to draw clock face
     private JLayeredPane clockFace; // pane used to store time, clock face, etc
     private Face face;              // Face object (extend JPanel to wrap image) used to store image
@@ -18,6 +19,7 @@ public class ClockFace {
         this.stop = new JButton("stop");
         this.face = new Face();
         this.time = createTimeLabel("25:00", new Point(100, 125));
+        this.status = createStatusLabel("- STOP -", new Point(100, 200));
         this.clockFace = createClockFace();
     }
 
@@ -30,6 +32,7 @@ public class ClockFace {
         lp.setPreferredSize(new Dimension(300, 300));
         lp.add(this.face, new Integer(0));
         lp.add(this.time, new Integer(1));
+        lp.add(this.status, new Integer(2));
         return lp;
     }
 
@@ -46,10 +49,45 @@ public class ClockFace {
     }
 
 
+    private JLabel createStatusLabel(String text, Point origin) {
+        JLabel label = new JLabel(text);
+        label.setVerticalAlignment(JLabel.CENTER);
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setOpaque(false);
+        label.setFont(new Font("Arial", Font.ITALIC,15));
+        label.setForeground(new Color(32, 173, 107));
+        label.setBounds(origin.x, origin.y, 100, 25);
+        return label;
+    }
+
+
     // this method is to update time display
-    public void setTimeLabel(String text) {
+    public void setTime(String text) {
         this.time.setText(text);
     }
+
+    // this method is to update status display
+    // options: "- RESET -", "- IN SESSION -", "- STOP -"
+    public void setStatus(String text) {
+        this.time.setText(text);
+    }
+
+
+    // this method is to add new ticks to clock face image
+    public void updateTick() {
+        this.face.addTick();
+    }
+
+    // this method is to reset ticks of clock face image
+    public void resetTick() {
+        this.face.resetTick();
+    }
+
+    // TODO(1): add listener to start and stop buttons
+    // TODO(2): update time per second
+    // TODO(3): update ticks very 1/25 of session time
+    // TODO(3): update status when (start: "- in session -") (stop: "- stop -") (reset: "- reset -")
+
 
     // construct a temporary window to test layout
     public static void main(String args[]) {
@@ -65,11 +103,10 @@ public class ClockFace {
         content.add(buttons, BorderLayout.PAGE_END);
 
         // examples: test update methods
-        cf.face.addTick();
-        cf.face.addTick();
-        cf.face.addTick();
-        cf.setTimeLabel("24:00");
-
+        cf.updateTick();
+        cf.updateTick();
+        cf.updateTick();
+        cf.setTime("22:00");
 
         window.setContentPane(content);
         window.setLocation(100,50);
@@ -140,6 +177,11 @@ public class ClockFace {
         // method to add new ticks to clock face image
         public void addTick () {
             this.time += 1;
+            repaint();
+        }
+
+        public void resetTick () {
+            this.time = 0;
             repaint();
         }
 
