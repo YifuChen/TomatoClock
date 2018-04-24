@@ -77,8 +77,8 @@ public class ClockFace {
 
 
     // this method is to add new ticks to clock face image
-    public void updateTick() {
-        this.face.addTick();
+    public void updateTick(int tick) {
+        this.face.setTick(tick);
     }
 
     // this method is to reset ticks of clock face image
@@ -106,9 +106,9 @@ public class ClockFace {
         content.add(buttons, BorderLayout.PAGE_END);
 
         // examples: test update methods
-        cf.updateTick();
-        cf.updateTick();
-        cf.updateTick();
+        cf.updateTick(1);
+        cf.updateTick(2);
+        cf.updateTick(3);
         cf.setTime("22:00");
 
         window.setContentPane(content);
@@ -178,8 +178,8 @@ public class ClockFace {
         }
 
         // method to add new ticks to clock face image
-        public void addTick () {
-            this.time += 1;
+        public void setTick (int tick) {
+            this.time = tick;
             repaint();
         }
 

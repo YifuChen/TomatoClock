@@ -9,6 +9,7 @@ public class TomatoUI extends JPanel implements ActionListener {
     JTextArea fileList;
     JButton openButton;
     JButton saveButton;
+    TomatoTimer t;
 
     public TomatoUI() {
         super(new BorderLayout());
@@ -24,12 +25,64 @@ public class TomatoUI extends JPanel implements ActionListener {
         TodoList todo = new TodoList();
         ClockFace cf = new ClockFace();
 
+
+
+        JButton start = new JButton("start");
+        JButton pause = new JButton("pause");
+        JButton stop = new JButton("stop");
+        JPanel clockButtons = new JPanel(new GridLayout(1,2));
+        clockButtons.add(start);
+        JPanel clockPanel = new JPanel(new BorderLayout());
+        clockPanel.add(cf.getClockFace(), BorderLayout.CENTER);
+        clockPanel.add(clockButtons, BorderLayout.PAGE_END);
+
         // layout
         add(title, BorderLayout.PAGE_START);
-        add(cf.getClockFace(), BorderLayout.CENTER);
+        add(clockPanel, BorderLayout.CENTER);
         add(todo, BorderLayout.LINE_END);
 
-        TomatoTimer t = new TomatoTimer(25, cf);
+        pause.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean isPaused = t.togglePause();
+                if (isPaused) {
+                    pause.setText("resume");
+                } else {
+                    pause.setText("pause");
+                }
+            }
+        });
+
+        stop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                t.destroy();
+                t = null;
+                clockButtons.remove(pause);
+                clockButtons.remove(stop);
+                clockButtons.add(start);
+                clockPanel.revalidate();
+                clockPanel.repaint();
+
+                // TODO: replace this with time from setting
+                cf.setTime("25:00");
+                cf.resetTick();
+            }
+        });
+
+        start.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (t == null) {
+                    t = new TomatoTimer(25, cf);
+                    clockButtons.remove(start);
+                    clockButtons.add(pause);
+                    clockButtons.add(stop);
+                    clockPanel.revalidate();
+                    clockPanel.repaint();
+                }
+            }
+        });
     }
 
     @Override
