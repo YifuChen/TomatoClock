@@ -3,12 +3,17 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 public class TomatoUI extends JPanel implements ActionListener {
     JFileChooser fc;
-    JTextArea fileList;
-    JButton openButton;
-    JButton saveButton;
+//    JTextArea fileList;
+//    JButton openButton;
+//    JButton saveButton;
     TomatoTimer t;
 
     public TomatoUI() {
@@ -36,10 +41,86 @@ public class TomatoUI extends JPanel implements ActionListener {
         clockPanel.add(cf.getClockFace(), BorderLayout.CENTER);
         clockPanel.add(clockButtons, BorderLayout.PAGE_END);
 
+        JButton add = new JButton("add");
+        JButton save = new JButton("save");
+        JButton load = new JButton("load");
+
+
+        JPanel todoPanel = new JPanel(new BorderLayout());
+        JPanel todoButtons = new JPanel(new GridLayout(1,3));
+        todoButtons.add(add);
+        todoButtons.add(save);
+        todoButtons.add(load);
+        todoPanel.add(todo,BorderLayout.CENTER);
+        todoPanel.add(todoButtons,BorderLayout.PAGE_END);
+
+
         // layout
         add(title, BorderLayout.PAGE_START);
         add(clockPanel, BorderLayout.CENTER);
-        add(todo, BorderLayout.LINE_END);
+        add(todoPanel, BorderLayout.LINE_END);
+
+        add.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String s = (String) JOptionPane.showInputDialog("Please input the name");
+                todo.addTask(s);
+            }
+        });
+
+
+
+
+        save.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String s = todo.toString();
+                int returnVal = fc.showSaveDialog(save);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    try {
+                    PrintWriter writer = new PrintWriter(fc.getSelectedFile(), "UTF-8");
+                writer.println(s);
+                writer.close();
+                    } catch (Exception ee){
+                System.out.println("Problem writing to file: "+ee);
+                    }
+                }
+
+            }
+        });
+
+        load.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                int returnVal = fc.showSaveDialog(save);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        Scanner scanner = new Scanner(fc.getSelectedFile());
+                        String s = scanner.nextLine();
+                        todo.items.clear();
+                        int i = 0;
+                        while (i < s.length()){
+                            int j = i;
+                            while (j < s.length() && s.charAt(j)!= ',') j++;
+                            String temp = s.substring(i,j);
+                            System.out.println(temp);
+                            todo.addTask(temp);
+                            i = j+1;
+                        }
+                        scanner.close();
+                    } catch (Exception ee){
+                        System.out.println("Problem reading file: "+ee);
+                    }
+                }
+
+            }
+        });
+
+
+
+
+
 
         pause.addActionListener(new ActionListener() {
             @Override
@@ -52,6 +133,11 @@ public class TomatoUI extends JPanel implements ActionListener {
                 }
             }
         });
+
+
+
+
+
 
         stop.addActionListener(new ActionListener() {
             @Override

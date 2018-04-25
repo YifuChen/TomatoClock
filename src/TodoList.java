@@ -44,6 +44,12 @@ public class TodoList extends JPanel {
         return true;
     }
 
+
+
+
+
+
+
     class CheckListRenderer extends JCheckBox implements ListCellRenderer {
 
         public CheckListRenderer() {
@@ -83,4 +89,15 @@ public class TodoList extends JPanel {
             return str;
         }
     }
+
+
+    public String toString(){
+        String ret = "";
+        for (CheckableItem c:items){
+            ret += c.str+',';
+        }
+        return ret;
+
+    }
+
 }
