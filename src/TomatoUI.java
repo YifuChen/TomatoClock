@@ -104,7 +104,7 @@ public class TomatoUI extends JPanel implements ActionListener {
                             int j = i;
                             while (j < s.length() && s.charAt(j)!= ',') j++;
                             String temp = s.substring(i,j);
-                            System.out.println(temp);
+                            //System.out.println(temp);
                             todo.addTask(temp);
                             i = j+1;
                         }
