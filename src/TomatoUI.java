@@ -27,9 +27,9 @@ public class TomatoUI extends JPanel implements ActionListener {
         fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        TodoList todo = new TodoList();
+        TodoTable tb = new TodoTable();
         ClockFace cf = new ClockFace();
-
+        TodoTable.TodoTableModel model = tb.getModel();
 
 
         JButton start = new JButton("start");
@@ -41,17 +41,17 @@ public class TomatoUI extends JPanel implements ActionListener {
         clockPanel.add(cf.getClockFace(), BorderLayout.CENTER);
         clockPanel.add(clockButtons, BorderLayout.PAGE_END);
 
-        JButton add = new JButton("add");
-        JButton save = new JButton("save");
-        JButton load = new JButton("load");
+        JButton addBtn = new JButton("add");
+        JButton saveBtn = new JButton("save");
+        JButton loadBtn = new JButton("load");
 
 
         JPanel todoPanel = new JPanel(new BorderLayout());
         JPanel todoButtons = new JPanel(new GridLayout(1,3));
-        todoButtons.add(add);
-        todoButtons.add(save);
-        todoButtons.add(load);
-        todoPanel.add(todo,BorderLayout.CENTER);
+        todoButtons.add(addBtn);
+        todoButtons.add(saveBtn);
+        todoButtons.add(loadBtn);
+        todoPanel.add(tb,BorderLayout.CENTER);
         todoPanel.add(todoButtons,BorderLayout.PAGE_END);
 
 
@@ -60,52 +60,55 @@ public class TomatoUI extends JPanel implements ActionListener {
         add(clockPanel, BorderLayout.CENTER);
         add(todoPanel, BorderLayout.LINE_END);
 
-        add.addActionListener(new ActionListener() {
+        // example of adding a task
+        tb.getModel().addTask("test");
+
+        addBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String s = (String) JOptionPane.showInputDialog("Please input the name");
-                todo.addTask(s);
+                model.addTask(s);
             }
         });
 
 
 
 
-        save.addActionListener(new ActionListener() {
+        saveBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String s = todo.toString();
-                int returnVal = fc.showSaveDialog(save);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    try {
-                    PrintWriter writer = new PrintWriter(fc.getSelectedFile(), "UTF-8");
-                writer.println(s);
-                writer.close();
-                    } catch (Exception ee){
-                System.out.println("Problem writing to file: "+ee);
-                    }
-                }
+//                String s = todo.toString();
+//                int returnVal = fc.showSaveDialog(saveBtn);
+//                if (returnVal == JFileChooser.APPROVE_OPTION) {
+//                    try {
+//                    PrintWriter writer = new PrintWriter(fc.getSelectedFile(), "UTF-8");
+//                writer.println(s);
+//                writer.close();
+//                    } catch (Exception ee){
+//                System.out.println("Problem writing to file: "+ee);
+//                    }
+//                }
 
             }
         });
 
-        load.addActionListener(new ActionListener() {
+        loadBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                int returnVal = fc.showSaveDialog(save);
+                int returnVal = fc.showSaveDialog(saveBtn);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     try {
                         Scanner scanner = new Scanner(fc.getSelectedFile());
                         String s = scanner.nextLine();
-                        todo.items.clear();
+                        model.clear();
                         int i = 0;
                         while (i < s.length()){
                             int j = i;
                             while (j < s.length() && s.charAt(j)!= ',') j++;
                             String temp = s.substring(i,j);
                             System.out.println(temp);
-                            todo.addTask(temp);
+                            model.addTask(temp);
                             i = j+1;
                         }
                         scanner.close();
@@ -133,11 +136,6 @@ public class TomatoUI extends JPanel implements ActionListener {
                 }
             }
         });
-
-
-
-
-
 
         stop.addActionListener(new ActionListener() {
             @Override
