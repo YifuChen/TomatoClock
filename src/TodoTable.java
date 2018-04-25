@@ -46,7 +46,13 @@ public class TodoTable extends JPanel {
             data.add(new Task(false, task, 0, 0));
             int row = data.size() - 1;
             indexLookup.put(task, row);
+            fireTableRowsInserted(row, row);
             return row;
+        }
+
+        public void clear() {
+            data = new ArrayList<>();
+            indexLookup = new HashMap<>();
         }
 
         @Override
