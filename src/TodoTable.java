@@ -1,20 +1,26 @@
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TodoTable extends JPanel {
+    private TodoTableModel model;
+
+    public TodoTableModel getModel() {
+        return model;
+    }
 
     public TodoTable() {
-        super(new GridLayout(2, 0));
-        TodoTableModel model = new TodoTableModel();
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        model = new TodoTableModel();
         final JTable table = new JTable(model);
-        table.getColumnModel().getColumn(0).setPreferredWidth(10);
-        table.setPreferredSize(new Dimension(300, 300));
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.getColumnModel().getColumn(0).setPreferredWidth(20);
+        scrollPane.setPreferredSize(new Dimension(300, 300));
         table.setGridColor(Color.LIGHT_GRAY);
-        add(table);
+        add(scrollPane);
+        add(new JLabel("placeholder for stats"));
     }
 
     class TodoTableModel extends AbstractTableModel {
@@ -24,12 +30,23 @@ public class TodoTable extends JPanel {
                 "expected",
                 "completed"
         };
-        private HashMap<Integer, Object[]> data;
+        private ArrayList<Task> data;
+        private HashMap<String, Integer> indexLookup;
 
         public TodoTableModel() {
-            data = new HashMap<>();
-            data.put(0, new Object[]{new Boolean(true),"do hw", new Integer(5), new Integer( 4)});
-            data.put(1, new Object[]{new Boolean(true),"do hw", new Integer(5), new Integer( 4)});
+            data = new ArrayList<Task>();
+            indexLookup = new HashMap<>();
+        }
+
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        public int addTask(String task) {
+            data.add(new Task(false, task, 0, 0));
+            int row = data.size() - 1;
+            indexLookup.put(task, row);
+            return row;
         }
 
         @Override
@@ -44,15 +61,37 @@ public class TodoTable extends JPanel {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            System.out.println(rowIndex + " " + columnIndex);
-            Object[] task = data.get(rowIndex);
-            return task[columnIndex];
+            Task t = data.get(rowIndex);
+            switch (columnIndex) {
+                case 0:
+                    return (boolean) t.isDone();
+                case 1:
+                    return t.getTask();
+                case 2:
+                    return t.getExpected();
+                case 3:
+                    return t.getCompleted();
+            }
+            return null;
         }
 
-        public void setValueAt(Object value, int row, int col) {
-            Object[] task = data.get(row);
-            task[col] = value;
-            fireTableCellUpdated(row, col);
+        public void setValueAt(Object value, int rowIndex, int columnIndex) {
+            Task t = data.get(rowIndex);
+            switch (columnIndex) {
+                case 0:
+                    t.setDone((boolean) value);
+                    break;
+                case 1:
+                    t.setTask((String) value);
+                    break;
+                case 2:
+                    t.setExpected((int) value);
+                    break;
+                case 3:
+                    t.setCompleted((int) value);
+                    break;
+            }
+            fireTableCellUpdated(rowIndex, columnIndex);
         }
 
         public boolean isCellEditable(int row, int col) {
@@ -61,6 +100,15 @@ public class TodoTable extends JPanel {
 
         public Class getColumnClass(int c) {
             return getValueAt(0, c).getClass();
+        }
+
+        public int getTaskRow(String task) {
+            if (indexLookup.containsKey(task)) {
+                return indexLookup.get(task);
+            }
+            System.out.println("task not found, creating a new task");
+            int row = addTask(task);
+            return row;
         }
     }
 
@@ -71,6 +119,10 @@ public class TodoTable extends JPanel {
 
         //Create and set up the content pane.
         TodoTable newContentPane = new TodoTable();
+
+        // exmaple of adding a task
+        newContentPane.getModel().addTask("do hw");
+
         newContentPane.setOpaque(true); //content panes must be opaque
         frame.setContentPane(newContentPane);
 
