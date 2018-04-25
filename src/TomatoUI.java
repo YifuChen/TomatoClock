@@ -22,7 +22,7 @@ public class TomatoUI extends JPanel implements ActionListener {
         fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        TodoList todo = new TodoList();
+        TodoTable tb = new TodoTable();
         ClockFace cf = new ClockFace();
 
 
@@ -39,7 +39,10 @@ public class TomatoUI extends JPanel implements ActionListener {
         // layout
         add(title, BorderLayout.PAGE_START);
         add(clockPanel, BorderLayout.CENTER);
-        add(todo, BorderLayout.LINE_END);
+        add(tb, BorderLayout.LINE_END);
+
+        // example of adding a task
+        tb.getModel().addTask("test");
 
         pause.addActionListener(new ActionListener() {
             @Override
