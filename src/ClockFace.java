@@ -1,30 +1,53 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-public class ClockFace {
+public class ClockFace extends JPanel{
 
-    private JButton start;          // start button
-    private JButton stop;           // stop button
     private JLabel time;            // text that display current time
     private JLabel status;          // text that display current status
     private BufferedImage img;      // img used to draw clock face
     private JLayeredPane clockFace; // pane used to store time, clock face, etc
     private Face face;              // Face object (extend JPanel to wrap image) used to store image
+    private MyButton start;
+    private MyButton stop;
+    private TomatoTimer timer;
+    private boolean inTimming;
 
 
     public ClockFace() {
         this.img = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
-        this.start = new JButton("start");
-        this.stop = new JButton("stop");
+        this.start = new MyButton("START", 150, 40);
+        this.stop = new MyButton("STOP", 150, 40);
         this.face = new Face();
         this.time = createTimeLabel("25:00", new Point(100, 125));
         this.status = createStatusLabel("- STOP -", new Point(100, 200));
         this.clockFace = createClockFace();
+        this.timer = new TomatoTimer(25, this);
+        this.inTimming = false;
+        addButtonListener();
     }
 
-    public JLayeredPane getClockFace() {
-        return clockFace;
+    private void addButtonListener() {
+        this.start.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                inTimming = true;
+                status.setText("- in session -");
+                timer.isPaused = false;
+            }
+
+        });
+
+        this.stop.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                status.setText("- stop -");
+                timer.isPaused = true;
+            }
+        });
     }
 
     private JLayeredPane createClockFace() {
@@ -63,6 +86,26 @@ public class ClockFace {
         return label;
     }
 
+    public JLayeredPane getDefaultPanel() {
+        return this.clockFace;
+    }
+
+    public MyButton getStartButton() {
+        this.start.setFont("Arial", 20, new Color(218, 218, 219));
+        return this.start;
+    }
+
+    public MyButton getStopButton() {
+        this.stop.setFont("Arial", 20, new Color(218, 218, 219));
+        return this.stop;
+    }
+
+    public boolean resetTimer(int span) {
+        this.timer.destroy();
+        this.timer = new TomatoTimer(span, this);
+        return true;
+    }
+
 
     // this method is to update time display
     public void setTime(String text) {
@@ -86,34 +129,26 @@ public class ClockFace {
         this.face.resetTick();
     }
 
-    // TODO(1): add listener to start and stop buttons
-    // TODO(2): update time per second
-    // TODO(3): update ticks very 1/25 of session time
-    // TODO(3): update status when (start: "- in session -") (stop: "- stop -") (reset: "- reset -")
-
 
     // construct a temporary window to test layout
     public static void main(String args[]) {
         ClockFace cf = new ClockFace();
+        TimerController sessionController = new TimerController(cf, "session", 25, true);
+        TimerController breakController = new TimerController(cf, "break", 5, false);
+
         JFrame window = new JFrame("ClockFace");
-        JPanel content = new JPanel();
-        JPanel buttons = new JPanel(new GridLayout(1,2));
+        JPanel content = new JPanel(new BorderLayout());
+        JPanel controlPanel = new JPanel(new GridLayout(1,2));
 
-        buttons.add(cf.start);
-        buttons.add(cf.stop);
-        content.setLayout(new BorderLayout());
-        content.add(cf.clockFace, BorderLayout.CENTER);
-        content.add(buttons, BorderLayout.PAGE_END);
 
-        // examples: test update methods
-        cf.updateTick(1);
-        cf.updateTick(2);
-        cf.updateTick(3);
-        cf.setTime("22:00");
+        controlPanel.add(sessionController.getDefaultPanel());
+        controlPanel.add(breakController.getDefaultPanel());
+        content.add(cf.getDefaultPanel(), BorderLayout.PAGE_START);
+        content.add(controlPanel, BorderLayout.CENTER);
+
 
         window.setContentPane(content);
         window.setLocation(100,50);
-        window.setPreferredSize(new Dimension(300, 320));
         window.pack();
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         window.setVisible(true);

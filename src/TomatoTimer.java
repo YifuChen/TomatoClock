@@ -16,7 +16,7 @@ public class TomatoTimer {
         this.cf = cf;
         this.remainingSeconds = lengthMin * 60;
         this.tickInSec = remainingSeconds / 25;
-        this.isPaused = false;
+        this.isPaused = true;
         ses = Executors.newSingleThreadScheduledExecutor();
         ses.scheduleWithFixedDelay(new Runnable() {
             @Override

@@ -12,63 +12,88 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-public class TomatoUI extends JPanel implements ActionListener {
-    JFileChooser fc;
-//    JTextArea fileList;
-//    JButton openButton;
-//    JButton saveButton;
-    TomatoTimer t;
+public class TomatoUI extends JPanel {
+
+    // JTextArea fileList;
+    // JButton openButton;
+    // JButton saveButton;
+    private JLabel title;
+    private TomatoTimer t;
+    private ClockFace clockface;
+    private TimerController sessionController;
+    private TimerController breakController;
+    private JFileChooser fc;
+    private Color textColor;
+    private Color bgColor;
+
 
     public TomatoUI() {
-        super(new BorderLayout());
-        setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
+        super(new GridLayout(1,2));
+        //setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
+
+
+        this.title = new JLabel("Tomato Clock");
+        this.clockface = new ClockFace();
+        this.fc = new JFileChooser();
+        this.fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        this.sessionController = new TimerController(this.clockface, "session", 25, true);
+        this.breakController = new TimerController(this.clockface, "break", 5, false);
+
+        this.textColor = new Color(218, 218, 219);
+        this.bgColor = new Color(33,33,33);
 
         // UIs
-        JLabel title = new JLabel("<html><h1>Tomato</h1></html>");
+
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(bgColor);
+        titlePanel.setPreferredSize(new Dimension(600, 100));
+        this.title.setFont(new Font("Arial", Font.BOLD, 28));
+        this.title.setForeground(textColor);
+        titlePanel.add(this.title);
 
 
-        fc = new JFileChooser();
-        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        JPanel controlPanel = new JPanel();
+        controlPanel.setLayout(new GridLayout(1, 2));
+        controlPanel.setPreferredSize(new Dimension(300, 130));
+        controlPanel.add(sessionController.getDefaultPanel());
+        controlPanel.add(breakController.getDefaultPanel());
 
-        TodoTable tb = new TodoTable();
-        ClockFace cf = new ClockFace();
-        TodoTable.TodoTableModel model = tb.getModel();
-
-
-        JButton start = new JButton("start");
-        JButton pause = new JButton("pause");
-        JButton stop = new JButton("stop");
-        JPanel clockButtons = new JPanel(new GridLayout(1,2));
-        clockButtons.add(start);
-        JPanel clockPanel = new JPanel(new BorderLayout());
-        clockPanel.add(cf.getClockFace(), BorderLayout.CENTER);
-        clockPanel.add(clockButtons, BorderLayout.PAGE_END);
-
-        JButton addBtn = new JButton("add");
-        JButton saveBtn = new JButton("save");
-        JButton loadBtn = new JButton("load");
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 2));
+        buttonPanel.setPreferredSize(new Dimension(300, 40));
+        buttonPanel.add(clockface.getStartButton());
+        buttonPanel.add(clockface.getStopButton());
 
 
         JPanel todoPanel = new JPanel(new BorderLayout());
         JPanel todoButtons = new JPanel(new GridLayout(1,3));
+        TodoTable tb = new TodoTable();
+        TodoTable.TodoTableModel model = tb.getModel();
+        JButton addBtn = new JButton("add");
+        JButton saveBtn = new JButton("save");
+        JButton loadBtn = new JButton("load");
         todoButtons.add(addBtn);
         todoButtons.add(saveBtn);
         todoButtons.add(loadBtn);
         todoPanel.add(tb,BorderLayout.CENTER);
         todoPanel.add(todoButtons,BorderLayout.PAGE_END);
 
-        JPanel controllers = new JPanel();
-        controllers.setLayout(new GridLayout(2, 1));
-        TimerController sessionController = new TimerController(cf, "session", 25, true);
-        TimerController breakController = new TimerController(cf, "break", 5, false);
-        controllers.add(sessionController);
-        controllers.add(breakController);
 
         // layout
-        add(title, BorderLayout.PAGE_START);
-        add(controllers, BorderLayout.LINE_START);
-        add(clockPanel, BorderLayout.CENTER);
-        add(todoPanel, BorderLayout.LINE_END);
+        JPanel clockUI = new JPanel(new BorderLayout());
+        JPanel todoUI = new JPanel(new BorderLayout());
+
+        //clockUI.setPreferredSize(new Dimension(300, 550));
+
+        clockUI.add(this.clockface.getDefaultPanel(), BorderLayout.PAGE_START);
+        clockUI.add(controlPanel, BorderLayout.CENTER);
+        clockUI.add(buttonPanel, BorderLayout.PAGE_END);
+
+        todoUI.add(todoPanel, BorderLayout.CENTER);
+
+        this.add(clockUI);
+        this.add(todoUI);
+
 
         // example of adding a task
         tb.getModel().addTask("test");
@@ -139,7 +164,7 @@ public class TomatoUI extends JPanel implements ActionListener {
 
 
 
-        pause.addActionListener(new ActionListener() {
+        /**pause.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean isPaused = t.togglePause();
@@ -159,8 +184,8 @@ public class TomatoUI extends JPanel implements ActionListener {
                 clockButtons.remove(pause);
                 clockButtons.remove(stop);
                 clockButtons.add(start);
-                clockPanel.revalidate();
-                clockPanel.repaint();
+                //clockPanel.revalidate();
+                //clockPanel.repaint();
 
                 // TODO: replace this with time from setting
                 cf.setTime("25:00");
@@ -176,46 +201,51 @@ public class TomatoUI extends JPanel implements ActionListener {
                     clockButtons.remove(start);
                     clockButtons.add(pause);
                     clockButtons.add(stop);
-                    clockPanel.revalidate();
-                    clockPanel.repaint();
+                    //clockPanel.revalidate();
+                    //clockPanel.repaint();
                 }
             }
-        });
+        });**/
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-//        if (e.getSource() == openButton) {
-//            int returnVal = fc.showOpenDialog(TomatoUI.this);
-//            if (returnVal == JFileChooser.APPROVE_OPTION) {
-//            }
-//        } else if (e.getSource() == saveButton){
-//            System.out.println("save");
-//            BufferedImage res = photoPanel.getImage();
-//            try {
-//                if (ImageIO.write(res, "png", new File("./output_image.png")))
-//                {
-//                    System.out.println("-- saved");
-//                }
-//            } catch (IOException err) {
-//                err.printStackTrace();
-//            }
-//        }
-    }
-
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        // antialising
-        Graphics2D g2 = (Graphics2D)g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    }
-//
-//    public void addEntry() {
-//        drawingList.addEntry();
-//    }
-//
-//    public void popDrawing() {
-//        photoPanel.popDrawing();
-//    }
 }
+
+
+/**
+ *     @Override
+ *     public void actionPerformed(ActionEvent e) {
+ * //        if (e.getSource() == openButton) {
+ * //            int returnVal = fc.showOpenDialog(TomatoUI.this);
+ * //            if (returnVal == JFileChooser.APPROVE_OPTION) {
+ * //            }
+ * //        } else if (e.getSource() == saveButton){
+ * //            System.out.println("save");
+ * //            BufferedImage res = photoPanel.getImage();
+ * //            try {
+ * //                if (ImageIO.write(res, "png", new File("./output_image.png")))
+ * //                {
+ * //                    System.out.println("-- saved");
+ * //                }
+ * //            } catch (IOException err) {
+ * //                err.printStackTrace();
+ * //            }
+ * //        }
+ *     }
+ *
+ *     public void paintComponent(Graphics g) {
+ *         super.paintComponent(g);
+ *
+ *         // antialising
+ *         Graphics2D g2 = (Graphics2D)g;
+ *         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+ *     }
+ * //
+ * //    public void addEntry() {
+ * //        drawingList.addEntry();
+ * //    }
+ * //
+ * //    public void popDrawing() {
+ * //        photoPanel.popDrawing();
+ * //    }
+ */
+
