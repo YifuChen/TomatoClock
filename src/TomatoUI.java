@@ -57,9 +57,16 @@ public class TomatoUI extends JPanel implements ActionListener {
         todoPanel.add(tb,BorderLayout.CENTER);
         todoPanel.add(todoButtons,BorderLayout.PAGE_END);
 
+        JPanel controllers = new JPanel();
+        controllers.setLayout(new GridLayout(2, 1));
+        TimerController sessionController = new TimerController(cf, "session", 25, true);
+        TimerController breakController = new TimerController(cf, "break", 5, false);
+        controllers.add(sessionController);
+        controllers.add(breakController);
 
         // layout
         add(title, BorderLayout.PAGE_START);
+        add(controllers, BorderLayout.LINE_START);
         add(clockPanel, BorderLayout.CENTER);
         add(todoPanel, BorderLayout.LINE_END);
 

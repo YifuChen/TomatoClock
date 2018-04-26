@@ -13,25 +13,29 @@ public class TimerController extends JPanel {
     private JPanel buttonLayer;
     private JButton addButton;
     private JButton minusButton;
+    private boolean changeFace;
 
-    public TimerController(ClockFace cf, String controllerName, int defaultTime) {
+    public TimerController(ClockFace cf, String controllerName, int defaultTime, boolean changeFace){
+        setLayout(new GridLayout(3,1));
         this.cf = cf;
         this.controllerName = controllerName;
         this.currentTime = defaultTime;
-        content = new JPanel();
-        content.setLayout(new GridLayout(3,1));
+        this.changeFace = changeFace;
         nameLable = new JLabel(controllerName);
-        content.add(nameLable);
+        nameLable.setHorizontalAlignment(JLabel.CENTER);
+        nameLable.setFont(new Font("Serif", Font.BOLD, 28));
+        add(nameLable);
         String defaultShowTime = defaultTime + " min";
         timeLable = new JLabel(defaultShowTime);
-        content.add(timeLable);
+        timeLable.setHorizontalAlignment(JLabel.CENTER);
+        add(timeLable);
         buttonLayer = new JPanel();
         buttonLayer.setLayout(new GridLayout(1,2));
         addButton = new JButton("+");
         minusButton = new JButton("-");
         buttonLayer.add(addButton);
         buttonLayer.add(minusButton);
-        content.add(buttonLayer);
+        add(buttonLayer);
         addListener();
     }
 
@@ -41,7 +45,10 @@ public class TimerController extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 currentTime++;
                 String passTime = currentTime + ":" +"00";
-                cf.setTime(passTime);
+                if (changeFace) {
+                    cf.setTime(passTime);
+                }
+                timeLable.setText(Integer.toString(currentTime) + " min");
             }
         });
 
@@ -50,7 +57,10 @@ public class TimerController extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 currentTime--;
                 String passTime = currentTime + ":" +"00";
-                cf.setTime(passTime);
+                if (changeFace) {
+                    cf.setTime(passTime);
+                }
+                timeLable.setText(Integer.toString(currentTime) + " min");
             }
         });
     }

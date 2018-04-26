@@ -8,9 +8,10 @@ public class TomatoMain {
         JFrame window = new JFrame("Photo Stamper");
         TomatoUI content = new TomatoUI();
         window.setContentPane(content);
+        window.setResizable(false);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setLocation(120,70);
-        window.setSize(600,400);
+        window.setSize(760,400);
         window.setVisible(true);
     }
 }
