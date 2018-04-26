@@ -7,14 +7,13 @@ import java.awt.image.BufferedImage;
 public class ClockFace extends JPanel{
 
     private JLabel time;            // text that display current time
-    private JLabel status;          // text that display current status
+    private JLabel status;          // text that display current status 'stop' 'reset' 'session' 'break'
     private BufferedImage img;      // img used to draw clock face
     private JLayeredPane clockFace; // pane used to store time, clock face, etc
     private Face face;              // Face object (extend JPanel to wrap image) used to store image
     private MyButton start;
     private MyButton stop;
     private TomatoTimer timer;
-    private boolean inTimming;
 
 
     public ClockFace() {
@@ -23,20 +22,25 @@ public class ClockFace extends JPanel{
         this.stop = new MyButton("STOP", 150, 40);
         this.face = new Face();
         this.time = createTimeLabel("25:00", new Point(100, 125));
-        this.status = createStatusLabel("- STOP -", new Point(100, 200));
+        this.status = createStatusLabel("- stop -", new Point(100, 200));
         this.clockFace = createClockFace();
-        this.timer = new TomatoTimer(25, this);
-        this.inTimming = false;
+        this.timer = new TomatoTimer(25, 5,this);
+
         addButtonListener();
     }
+
+
+    public String getStatus() {
+        return this.status.getText();
+    }
+
 
     private void addButtonListener() {
         this.start.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                inTimming = true;
-                status.setText("- in session -");
                 timer.isPaused = false;
+                setStatus(timer.getStatus());
             }
 
         });
@@ -44,8 +48,8 @@ public class ClockFace extends JPanel{
         this.stop.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                status.setText("- stop -");
                 timer.isPaused = true;
+                setStatus("- stop -");
             }
         });
     }
@@ -100,10 +104,13 @@ public class ClockFace extends JPanel{
         return this.stop;
     }
 
-    public boolean resetTimer(int span) {
+    public void resetTimer(int sessionTimeMin, int breakTimeMin) {
         this.timer.destroy();
-        this.timer = new TomatoTimer(span, this);
-        return true;
+        this.timer = new TomatoTimer(sessionTimeMin, breakTimeMin, this);
+    }
+
+    public TomatoTimer getTimer() {
+        return this.timer;
     }
 
 
@@ -115,13 +122,13 @@ public class ClockFace extends JPanel{
     // this method is to update status display
     // options: "- RESET -", "- IN SESSION -", "- STOP -"
     public void setStatus(String text) {
-        this.time.setText(text);
+        this.status.setText(text);
     }
 
 
     // this method is to add new ticks to clock face image
-    public void updateTick(int tick) {
-        this.face.setTick(tick);
+    public void updateTick(int t) {
+        this.face.updateTick(t);
     }
 
     // this method is to reset ticks of clock face image
@@ -158,7 +165,7 @@ public class ClockFace extends JPanel{
 
     private class Face extends JPanel {
 
-        private int time = 0;    // from 0 to 25, indicating 25 ticks at maximum
+        private int passedTime = 0;    // from 0 to 25, indicating 25 ticks at maximum
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -178,7 +185,7 @@ public class ClockFace extends JPanel{
 
             int radius = 200;
             int len = 30;
-            int n = 25;
+            int n = 50;
 
             Color bgColor = new Color(33,33,33);
             Color c1 = new Color(79,79,79);
@@ -189,20 +196,20 @@ public class ClockFace extends JPanel{
 
             g2d.setColor(c1);
             for(int i = 0; i < n; i++) {
-                double t = Math.PI * 198.0 / 180.0 - Math.PI * 9.0 / 180.0 * i;
+                double t = Math.PI * 198.0 / 180.0 - Math.PI * 9.0 / 360.0 * i + Math.PI * 9.0 / 720.0;
                 int start_x = (int) Math.round(centerX + radius * Math.cos(t));
                 int start_y = (int) Math.round(centerY - radius * Math.sin(t));
                 int end_x = (int) Math.round(centerX + (radius + len) * Math.cos(t));
                 int end_y = (int) Math.round(centerY - (radius + len) * Math.sin(t));
 
-                g2d.setStroke(new BasicStroke(6));
+                g2d.setStroke(new BasicStroke(4));
                 g2d.drawLine(start_x, start_y, end_x, end_y);
             }
 
 
             g2d.setColor(c2);
-            for(int j = 0; j < time; j++) {
-                double t = Math.PI * 198.0 / 180.0 - Math.PI * 9.0 / 180.0 * j;
+            for(int j = 0; j < passedTime; j++) {
+                double t = Math.PI * 198.0 / 180.0 - Math.PI * 9.0 / 360.0 * j + Math.PI * 9.0 / 720.0;
                 int start_x = (int) Math.round(centerX + radius * Math.cos(t));
                 int start_y = (int) Math.round(centerY - radius * Math.sin(t));
                 int end_x = (int) Math.round(centerX + (radius + len) * Math.cos(t));
@@ -213,13 +220,13 @@ public class ClockFace extends JPanel{
         }
 
         // method to add new ticks to clock face image
-        public void setTick (int tick) {
-            this.time = tick;
+        public void updateTick (int t) {
+            this.passedTime = t;
             repaint();
         }
 
         public void resetTick () {
-            this.time = 0;
+            this.passedTime = 0;
             repaint();
         }
 

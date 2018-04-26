@@ -27,19 +27,22 @@ public class TimerController extends JPanel {
         this.addButton = new MyButton("+", 30, 30);
         this.minusButton = new MyButton("-", 30, 30);
 
-        addListener();
+        initListener();
     }
 
-    private void addListener() {
+    public MyButton getAddButton() {
+        return this.addButton;
+    }
+
+    public MyButton getMinusButton() {
+        return this.minusButton;
+    }
+
+    private void initListener() {
         this.addButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 currentSpan++;
-                cf.resetTimer(currentSpan);
-                String passTime = currentSpan + ":" +"00";
-                if (changeFace) {
-                    cf.setTime(passTime);
-                }
                 timeLabel.setText(Integer.toString(currentSpan) + " min");
             }
         });
@@ -48,11 +51,6 @@ public class TimerController extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 currentSpan--;
-                cf.resetTimer(currentSpan);
-                String passTime = currentSpan + ":" +"00";
-                if (changeFace) {
-                    cf.setTime(passTime);
-                }
                 timeLabel.setText(Integer.toString(currentSpan) + " min");
             }
         });
@@ -70,12 +68,12 @@ public class TimerController extends JPanel {
         this.setLayout(new BorderLayout());
         this.setBackground(bgColor);
         this.nameLabel.setHorizontalAlignment(JLabel.CENTER);
-        this.nameLabel.setFont(new Font("Arial", Font.ITALIC, 20));
+        this.nameLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         this.nameLabel.setForeground(textColor);
         this.add(nameLabel, BorderLayout.PAGE_START);
 
         this.timeLabel.setHorizontalAlignment(JLabel.CENTER);
-        this.timeLabel.setFont(new Font("Arial", Font.PLAIN, 28));
+        this.timeLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         this.timeLabel.setForeground(textColor);
         this.timeLabel.setPreferredSize(new Dimension(150, 60));
         this.add(timeLabel, BorderLayout.CENTER);

@@ -1,34 +1,77 @@
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TodoTable extends JPanel {
+
     private TodoTableModel model;
+    private Color textColor = new Color(218, 218, 219);
+    private Color bgColor = new Color(40,40,40);
+    private Color accentColor = new Color(0, 153, 109);
+    private Color selectedColor = new Color(50,50,50);
+
+    public TodoTable() {
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.model = new TodoTableModel();
+
+        final JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.getColumnModel().getColumn(0).setPreferredWidth(20);
+        scrollPane.setPreferredSize(new Dimension(300, 300));
+
+        table.setBackground(bgColor);
+        table.setGridColor(bgColor);
+        table.setForeground(textColor);
+        table.setFont(new Font("Arial", Font.PLAIN, 16));
+        table.setRowHeight(30);
+        table.setSelectionBackground(selectedColor);
+        table.setBorder(BorderFactory.createEmptyBorder());
+
+
+        JTableHeader header = table.getTableHeader();
+        header.setPreferredSize(new Dimension(300, 30));
+        header.setFont(new Font("Arial", Font.ITALIC, 16));
+        header.setForeground(textColor);
+        header.setBackground(accentColor);
+
+
+        final TableCellRenderer tcrOs = table.getTableHeader().getDefaultRenderer();
+        table.getTableHeader().setDefaultRenderer(new TableCellRenderer() {
+
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                                                           Object value, boolean isSelected, boolean hasFocus,
+                                                           int row, int column) {
+                JLabel lbl = (JLabel) tcrOs.getTableCellRendererComponent(table,
+                        value, isSelected, hasFocus, row, column);
+                lbl.setForeground(textColor);
+                lbl.setBackground(accentColor);
+                lbl.setBorder(BorderFactory.createEmptyBorder());
+                lbl.setHorizontalAlignment(SwingConstants.LEFT);
+                return lbl;
+            }
+        });
+
+        scrollPane.getViewport().setBackground(bgColor);
+        scrollPane.setBorder(BorderFactory.createMatteBorder(0,0,0,0, new Color(79,79,79)));
+
+        this.add(scrollPane);
+    }
 
     public TodoTableModel getModel() {
         return model;
     }
 
-    public TodoTable() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        model = new TodoTableModel();
-        final JTable table = new JTable(model);
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.getColumnModel().getColumn(0).setPreferredWidth(20);
-        scrollPane.setPreferredSize(new Dimension(300, 300));
-        table.setGridColor(Color.LIGHT_GRAY);
-        add(scrollPane);
-        add(new JLabel("placeholder for stats"));
-    }
-
     class TodoTableModel extends AbstractTableModel {
         private String[] columnNames = new String[]{
-                "done",
-                "task",
-                "expected",
-                "completed"
+                " ",
+                "Task",
+                "Total",
+                "Now"
         };
         public ArrayList<Task> data;
         private HashMap<String, Integer> indexLookup;

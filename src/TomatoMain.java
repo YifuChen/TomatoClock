@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TomatoMain {
     public static void main(String[] args) {
-        JFrame window = new JFrame("Photo Stamper");
+        JFrame window = new JFrame("Tomato Clock");
         TomatoUI content = new TomatoUI();
         window.setContentPane(content);
         window.pack();

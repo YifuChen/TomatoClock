@@ -3,6 +3,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -69,9 +71,10 @@ public class TomatoUI extends JPanel {
         JPanel todoButtons = new JPanel(new GridLayout(1,3));
         TodoTable tb = new TodoTable();
         TodoTable.TodoTableModel model = tb.getModel();
-        JButton addBtn = new JButton("add");
-        JButton saveBtn = new JButton("save");
-        JButton loadBtn = new JButton("load");
+
+        MyButton addBtn = new MyButton("add", 50, 30);
+        MyButton saveBtn = new MyButton("save", 50, 30);
+        MyButton loadBtn = new MyButton("load", 50, 30);
         todoButtons.add(addBtn);
         todoButtons.add(saveBtn);
         todoButtons.add(loadBtn);
@@ -98,9 +101,67 @@ public class TomatoUI extends JPanel {
         // example of adding a task
         tb.getModel().addTask("test");
 
-        addBtn.addActionListener(new ActionListener() {
+
+        sessionController.getAddButton().addMouseListener(new MouseAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (clockface.getStatus().equals("- in session -") || clockface.getStatus().equals("- stop -")) {
+                    clockface.resetTimer(sessionController.getCurrentSpan(), breakController.getCurrentSpan());
+                    clockface.setTime(sessionController.getCurrentSpan() + ":" +"00");
+                    clockface.setStatus("- stop -");
+                } else {
+                    clockface.getTimer().setSessionTime(sessionController.getCurrentSpan());
+                }
+            }
+        });
+
+        sessionController.getMinusButton().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (clockface.getStatus().equals("- in session -") || clockface.getStatus().equals("- stop -")) {
+                    clockface.resetTimer(sessionController.getCurrentSpan(), breakController.getCurrentSpan());
+                    clockface.setTime(sessionController.getCurrentSpan() + ":" +"00");
+                    clockface.setStatus("- stop -");
+                } else {
+                    clockface.getTimer().setSessionTime(sessionController.getCurrentSpan());
+                }
+            }
+        });
+
+        breakController.getAddButton().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (clockface.getStatus().equals("- in break -") || clockface.getStatus().equals("- stop -")) {
+                    clockface.resetTimer(sessionController.getCurrentSpan(), breakController.getCurrentSpan());
+                    clockface.setTime(breakController.getCurrentSpan() + ":" +"00");
+                    clockface.setStatus("- stop -");
+                } else {
+                    clockface.getTimer().setBreakTime(breakController.getCurrentSpan());
+                }
+            }
+        });
+
+        breakController.getMinusButton().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (clockface.getStatus().equals("- in break -") || clockface.getStatus().equals("- stop -")) {
+                    clockface.resetTimer(sessionController.getCurrentSpan(), breakController.getCurrentSpan());
+                    clockface.setTime(breakController.getCurrentSpan() + ":" +"00");
+                    clockface.setStatus("- stop -");
+                } else {
+                    clockface.getTimer().setBreakTime(breakController.getCurrentSpan());
+                }
+            }
+        });
+
+        addBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
                 String s = (String) JOptionPane.showInputDialog("Please input the name");
                 model.addTask(s);
             }
@@ -109,9 +170,9 @@ public class TomatoUI extends JPanel {
 
 
 
-        saveBtn.addActionListener(new ActionListener() {
+        saveBtn.addMouseListener(new MouseAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void mouseClicked(MouseEvent e) {
 
                 int returnVal = fc.showSaveDialog(saveBtn);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -134,9 +195,9 @@ public class TomatoUI extends JPanel {
             }
         });
 
-        loadBtn.addActionListener(new ActionListener() {
+        loadBtn.addMouseListener(new MouseAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void mouseClicked(MouseEvent e) {
 
                 int returnVal = fc.showSaveDialog(saveBtn);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -159,53 +220,6 @@ public class TomatoUI extends JPanel {
             }
         });
 
-
-
-
-
-
-        /**pause.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean isPaused = t.togglePause();
-                if (isPaused) {
-                    pause.setText("resume");
-                } else {
-                    pause.setText("pause");
-                }
-            }
-        });
-
-        stop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                t.destroy();
-                t = null;
-                clockButtons.remove(pause);
-                clockButtons.remove(stop);
-                clockButtons.add(start);
-                //clockPanel.revalidate();
-                //clockPanel.repaint();
-
-                // TODO: replace this with time from setting
-                cf.setTime("25:00");
-                cf.resetTick();
-            }
-        });
-
-        start.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (t == null) {
-                    t = new TomatoTimer(25, cf);
-                    clockButtons.remove(start);
-                    clockButtons.add(pause);
-                    clockButtons.add(stop);
-                    //clockPanel.revalidate();
-                    //clockPanel.repaint();
-                }
-            }
-        });**/
     }
 
 }

@@ -38,7 +38,6 @@ public class MyButton extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 MyButton b = (MyButton) e.getSource();
-                b.mouseClicked = true;
                 b.repaint();
             }
 
@@ -69,7 +68,7 @@ public class MyButton extends JPanel {
         Color color1 = new Color(184, 208, 135);
         Color color2 = new Color(0, 153, 109);
         GradientPaint gp;
-        if (this.mouseEntered || this.mouseClicked) {
+        if (this.mouseEntered) {
             gp = new GradientPaint(0, 0, color2, w, 0, color2);
         } else {
             gp = new GradientPaint(0, 0, color1, w, 0, color2);
